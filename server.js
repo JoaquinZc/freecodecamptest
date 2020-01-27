@@ -20,7 +20,10 @@ app.get("/", function (req, res) {
 
 app.route("/api/timestamp/:date_string?").get(function(req, res) {
   var data = ((/^([0-9])*$/).test(req.params.date_string)) ? (parseInt(req.params.date_string)) : ((((/[0-9]+\-[0-9]+\-[0-9]+/)).test(req.params.date_string)) ? req.params.date_string : "a");
+  if(typeof data == "string" && data != "a") data = (parseInt(data.split("-")[0]) < 1970) ? ("a") : (data);
   var date = (req.params.date_string == undefined) ? (new Date()) : (new Date(data));
+  if(date.toString() == "Invalid Date")
+    res.json({error: "Invalid Date"})
   var unix = (isNaN(date.getTime())) ? (null) : (date.getTime());
   var utc = date.toUTCString();
   res.json({unix, utc});
